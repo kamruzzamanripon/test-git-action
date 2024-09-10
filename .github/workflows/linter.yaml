@@ -9,50 +9,26 @@ on:
       - dev  # Run the linter for PRs targeting the dev branch
 
 jobs:
-  lint:
+   phplint:
     runs-on: ubuntu-latest
-
-    services:
-      mysql:
-        image: mysql:8
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: testing
-        options: --health-cmd="mysqladmin ping --silent" --health-interval=10s --health-timeout=5s --health-retries=3
-        ports:
-          - 3306:3306
-        volumes:
-          - /var/lib/mysql
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Set up PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: 8.3 # Adjust this according to your PHP version
-        extensions: mbstring, dom, pdo, pdo_mysql
-        ini-values: post_max_size=256M, upload_max_filesize=256M
-        coverage: none
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v39
 
-    - name: Install Composer dependencies
-      run: composer install --prefer-dist --no-progress --no-suggest --no-interaction --optimize-autoloader
-
-    - name: Run PHP CodeSniffer
-      run: |
-        ./vendor/bin/phpcs --standard=PSR12 app/ routes/ tests/
-
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: 18.x # Adjust this according to your Node.js version
-
-    - name: Install Node.js dependencies
-      run: npm install
-
-    - name: Run ESLint
-      run: npm run lint # Ensure you have a linting script in your package.json
-
-    - name: Run Tests
-      run: npm run test # Optional, if you want to run unit tests too
+      - name: Run Laravel Pint
+        uses: sergotail/laravel-pint-action@v2
+        with:
+          onlyFiles: ${{ steps.changed-files.outputs.all_changed_files }}
+          testMode: true
+          verboseMode: true
+          configPath: ./pint.json
+          preset: laravel
+          onlyDirty: false
+          annotate: true
+          pintVersion: 1.8.0
+          annotateVersion: 1.8.5
+          useComposer: true
