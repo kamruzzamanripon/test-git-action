@@ -35,8 +35,19 @@ jobs:
         extensions: mbstring, dom, pdo, pdo_mysql
         ini-values: post_max_size=256M, upload_max_filesize=256M
 
+    - name: Install Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18' # Ensure the version matches your project
+
     - name: Install Composer dependencies
       run: composer install --prefer-dist --no-progress --no-suggest --no-interaction --optimize-autoloader
+
+    - name: Install Node.js dependencies
+      run: npm install
+
+    - name: Build Vite assets
+      run: npm run build
 
     - name: Create SQLite Database File
       run: |
