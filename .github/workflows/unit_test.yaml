@@ -1,0 +1,45 @@
+name: Run Tests
+
+on:
+  push:
+    branches:
+      - dev  # Only run tests on the dev branch
+  pull_request:
+    branches:
+      - dev  # Run tests for PRs targeting the dev branch
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: testing
+        options: --health-cmd="mysqladmin ping --silent" --health-interval=10s --health-timeout=5s --health-retries=3
+        ports:
+          - 3306:3306
+        volumes:
+          - /var/lib/mysql
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: 8.3
+        extensions: mbstring, dom, pdo, pdo_mysql
+        ini-values: post_max_size=256M, upload_max_filesize=256M
+
+    - name: Install Composer dependencies
+      run: composer install --prefer-dist --no-progress --no-suggest --no-interaction --optimize-autoloader
+
+    - name: Install Pest
+      run: composer require pestphp/pest --dev
+
+    - name: Run Pest Tests
+      run: ./vendor/bin/pest
