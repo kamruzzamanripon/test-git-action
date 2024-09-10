@@ -1,17 +1,19 @@
+import babelParser from '@babel/eslint-parser';
 import js from '@eslint/js';
 import vue from 'eslint-plugin-vue';
+import vueParser from 'vue-eslint-parser';
 
 export default [
   js.configs.recommended,
   {
-    files: ['**/*.vue'],
+    files: ['resources/**/*.vue'],
     languageOptions: {
-      parser: 'vue-eslint-parser',
+      parser: vueParser,
       parserOptions: {
-        parser: '@babel/eslint-parser', // Use Babel for JavaScript inside <script> in .vue files
+        parser: babelParser,
         ecmaVersion: 'latest',
         sourceType: 'module',
-        requireConfigFile: false, // Prevent the need for a separate Babel config file
+        requireConfigFile: false,
       },
     },
     plugins: {
@@ -19,18 +21,23 @@ export default [
     },
     rules: {
       'vue/no-unused-vars': 'error',
-      // Add more Vue-specific rules if necessary
     },
   },
   {
-    files: ['**/*.js'],
+    files: ['resources/**/*.js'],
     languageOptions: {
-      parser: '@babel/eslint-parser',
+      parser: babelParser,
       parserOptions: {
         ecmaVersion: 'latest',
         sourceType: 'module',
         requireConfigFile: false,
       },
     },
+    rules: {
+      'no-unused-vars': 'warn',
+    },
+  },
+  {
+    ignores: ['node_modules/**', 'dist/**'], // Ignored paths
   },
 ];
