@@ -27,7 +27,7 @@ jobs:
       run: composer install --prefer-dist --no-progress --no-suggest --no-interaction --optimize-autoloader
 
     - name: Run Laravel Pint
-      uses: sergotail/laravel-pint-action@master  # or main if v1 doesn't work
+      uses: sergotail/laravel-pint-action@master
 
     - name: Set up Node.js
       uses: actions/setup-node@v3
