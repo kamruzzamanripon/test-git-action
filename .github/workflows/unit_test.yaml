@@ -1,12 +1,12 @@
-name: Run Pest Tests
+name: Unit Tests
 
 on:
   push:
     branches:
-      - main
+      - dev  # Only run tests on the dev branch
   pull_request:
     branches:
-      - main
+      - dev  # Run tests for PRs targeting the dev branch
 
 jobs:
   test:
@@ -25,25 +25,32 @@ jobs:
           - /var/lib/mysql
 
     steps:
-      - name: Check out the code
-        uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.1'
-          extensions: mbstring, pdo, mysql
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: 8.3
+        extensions: mbstring, dom, pdo, pdo_mysql
+        ini-values: post_max_size=256M, upload_max_filesize=256M
 
-      - name: Install Dependencies
-        run: composer install --no-progress --prefer-dist --optimize-autoloader
+    - name: Install Composer dependencies
+      run: composer install --prefer-dist --no-progress --no-suggest --no-interaction --optimize-autoloader
 
-      - name: Create SQLite Database File
-        run: |
-          mkdir -p database
-          touch database/database.sqlite
+    - name: Create SQLite Database File
+    run: |
+      mkdir -p database
+      touch database/database.sqlite
 
-      - name: Run Migrations
-        run: php artisan migrate --force --env=testing
+    - name: Run Migrations
+      run: php artisan migrate --force --env=testing
 
-      - name: Run Tests
-        run: php artisan test
+    - name: Run Tests
+      run: php artisan test
+
+    - name: Install Pest
+      run: composer require pestphp/pest --dev
+
+    - name: Run Pest Tests
+      run: ./vendor/bin/pest
