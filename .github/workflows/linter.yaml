@@ -56,4 +56,3 @@ jobs:
 
     - name: Run Tests
       run: npm run test # Optional, if you want to run unit tests too
-      run: npm run test # Optional, if you want to run unit tests too
