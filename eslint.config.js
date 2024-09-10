@@ -5,11 +5,13 @@ import vue from 'eslint-plugin-vue';
 export default [
   js.configs.recommended,
   {
-    files: ['**/*.vue'],
+    files: ['**/*.vue', '**/*.js'],
     languageOptions: {
-      parserOptions: {
-        ecmaVersion: 'latest',
-        sourceType: 'module',
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      globals: {
+        window: 'readonly',  // Define window as a global
+        document: 'readonly', // Optionally, also add document
       },
     },
     plugins: {
