@@ -13,5 +13,6 @@ This app made by Laravel Framework. This is Simple Authentication App. Here you 
 - Create Database on MySql
 - php artisan serve
 - npm run dev
+- 
 
 
